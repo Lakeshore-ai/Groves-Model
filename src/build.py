@@ -110,6 +110,17 @@ def main():
     # from finalize import finalize
     # finalize(wb, out_path)
     
+    # openpyxl cannot save a workbook where every worksheet is hidden.
+    # While sheet builders are still scaffolded, keep a visible placeholder tab
+    # so local runs don't fail before all modules are wired up.
+    visible_sheets = [ws for ws in wb.worksheets if ws.sheet_state == 'visible']
+    if not visible_sheets:
+        ws = wb.create_sheet('Build_Status')
+        ws['A1'] = 'Groves Investor Model build is partially scaffolded.'
+        ws['A2'] = 'qPL_Fact engine generated successfully.'
+        ws['A3'] = 'Uncomment sheet builders in src/build.py to add model tabs.'
+        ws['A5'] = f'qPL_Fact rows: {qpl_rows}'
+
     out_path = os.path.join(out_dir, 'Groves_Investor_Model.xlsx')
     wb.save(out_path)
     print(f"Saved: {out_path}")
